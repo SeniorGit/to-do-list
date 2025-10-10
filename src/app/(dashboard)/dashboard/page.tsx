@@ -60,13 +60,24 @@ function DashboardContent() {
       });
 
       if (response.ok) {
-        const data: Task[] = await response.json();
-        setTasks(data);
+        const data = await response.json();
+        
+        if (Array.isArray(data)) {
+          setTasks(data);
+        } else if (data && Array.isArray(data.tasks)) {
+          setTasks(data.tasks);
+        } else if (data && Array.isArray(data.data)) {
+          setTasks(data.data);
+        } else {
+          console.warn('Unexpected response format:', data);
+          setTasks([]); 
+        }
       } else if (response.status === 401) {
         logout();
       }
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
+      setTasks([]); 
     } finally {
       setIsLoading(false);
     }
@@ -209,12 +220,13 @@ function DashboardContent() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1 text-center p-3 rounded-lg bg-primary/10">
-                    <p className="text-2xl font-bold text-primary">{tasks.length}</p>
+                    <p className="font-medium">{tasks?.length || 0}</p>
                     <p className="text-xs text-muted-foreground">Total Tasks</p>
                   </div>
                   <div className="space-y-1 text-center p-3 rounded-lg bg-yellow-500/10">
                     <p className="text-2xl font-bold text-yellow-600">
-                      {tasks.filter(t => t.priority === 'high').length}
+
+                      {tasks?.filter(t => t.priority === 'high').length || 0}
                     </p>
                     <p className="text-xs text-muted-foreground">High Priority</p>
                   </div>

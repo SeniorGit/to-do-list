@@ -15,7 +15,7 @@ export const useFetchTask = () => {
         fetchTasks();
     }, []);
   
-    // Req Get All
+    // Req Get All - FIXED
     const fetchTasks = async () => {
         try {
             setLoading(true);
@@ -34,7 +34,6 @@ export const useFetchTask = () => {
                 }
             }); 
 
-            // Handle response status lebih sederhana
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem('token');
@@ -45,19 +44,28 @@ export const useFetchTask = () => {
                 throw new Error(`Failed to fetch tasks: ${response.status}`);
             }
 
-            const data: Task[] = await response.json();
-            setTasks(data);
+            const result = await response.json();
+            
+            if (result.success && Array.isArray(result.data)) {
+                setTasks(result.data);
+            } else if (Array.isArray(result)) {
+                setTasks(result);
+            } else {
+                console.warn('Unexpected response format:', result);
+                setTasks([]);
+            }
 
         } catch (err) {
             console.error("Error fetching tasks:", err);
             setError(err instanceof Error ? err.message : 'Unknown error occurred');
             toast.error("Failed to load tasks. Please try again.");
+            setTasks([]); 
         } finally {
             setLoading(false);
         }
     };
 
-    // Add New Task
+    // Add New Task 
     const addTask = async (taskData: CreateTaskRequest) => {
         try {
             setLoading(true);
@@ -67,7 +75,7 @@ export const useFetchTask = () => {
             if (!token) {
                 setError('No authentication token found');
                 setLoading(false);
-                return;
+                return null;
             }
 
             const response = await fetch("http://localhost:3000/tasks", {
@@ -82,27 +90,33 @@ export const useFetchTask = () => {
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem('token');
-                    return;
+                    setError('Authentication failed');
+                    toast.error("Session expired. Please login again.");
+                    return null;
                 }
                 const errorData = await response.json().catch(() => null);
                 throw new Error(errorData?.message || 'Failed to add task');
             }
             
+            const result = await response.json();
+            
             await fetchTasks();
-            toast.success("Task added successfully!")
-            return await response.json();
+            toast.success("Task added successfully!");
+            
+            return result.data || result;
             
         } catch (err) {
             console.error("Error adding task:", err);
-            const errorMessage = err instanceof Error ? err.message : 'Failed to add task'
+            const errorMessage = err instanceof Error ? err.message : 'Failed to add task';
             setError(errorMessage);
             toast.error(errorMessage);
+            return null;
         } finally {
             setLoading(false);
         }
     };
   
-    // Update Task
+    // Update Task 
     const updateTask = async (id: number, updates: Partial<Task>) => {
         try {
             setLoading(true);
@@ -112,7 +126,7 @@ export const useFetchTask = () => {
             if (!token) {
                 setError('No authentication token found');
                 setLoading(false);
-                return;
+                return null;
             }
 
             const response = await fetch(`http://localhost:3000/tasks/${id}`, {
@@ -127,27 +141,32 @@ export const useFetchTask = () => {
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem('token');
-                    return;
+                    setError('Authentication failed');
+                    toast.error("Session expired. Please login again.");
+                    return null;
                 }
                 throw new Error('Failed to update task');
             }
+            const result = await response.json();
             
             await fetchTasks();
-            toast.success("Task updated successfully!")
-            return response.json();
+            toast.success("Task updated successfully!");
+            
+            return result.data || result;
             
         } catch (err) {
             console.error("Error updating task:", err);
-            const errorMessage = err instanceof Error ? err.message : 'Failed to update task'
+            const errorMessage = err instanceof Error ? err.message : 'Failed to update task';
             setError(errorMessage);
             toast.error(errorMessage);
+            return null;
         } finally {
             setLoading(false);
         }
     };
 
-    // Delete Task
-    const deleteTask = async (id: number) => {
+    // Delete Task 
+    const deleteTask = async (id: number): Promise<void> => {
         try {
             setLoading(true);
             setError(null);
@@ -169,10 +188,14 @@ export const useFetchTask = () => {
             if (!response.ok) {
                 if (response.status === 401) {
                     localStorage.removeItem('token');
+                    setError('Authentication failed');
+                    toast.error("Session expired. Please login again.");
                     return;
                 }
                 throw new Error('Failed to delete task');
             }
+            
+            const result = await response.json();
             
             await fetchTasks();
             toast.success("Task deleted successfully!");
