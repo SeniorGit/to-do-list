@@ -13,7 +13,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     useEffect(()=>{
         checkAuthStatus();
     }, []);
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
 
             // Sending token
-            const response = await fetch('http://localhost:3000/api/auth/me', {
+            const response = await fetch(`${API_URL}/api/auth/me`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // auth for login
     const login = async (email:string, password:string): Promise<AuthResponse> => {
         try{
-            const response = await fetch('http://localhost:3000/api/auth/login', {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // auth for register
     const register = async (email:string, password:string, username:string): Promise<AuthResponse> => {
         try{
-            const response = await fetch('http://localhost:3000/api/auth/register', {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: 'POST', 
                 headers: {
                     'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.removeItem('token');
         setUser(null);
 
-        fetch('http://localhost:3000/api/auth/logout', {
+        fetch(`${API_URL}/api/auth/logout`, {
             method: 'POST'
         }).catch(error => {
             console.error('Logout API error:', error);

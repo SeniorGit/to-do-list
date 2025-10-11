@@ -6,7 +6,7 @@ export const useFetchTask = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState<boolean>(true); 
     const [error, setError] = useState<string | null>(null); 
-  
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const getToken = (): string | null => {
         return localStorage.getItem('token');
     };
@@ -28,7 +28,7 @@ export const useFetchTask = () => {
                 return;
             }
 
-            const response = await fetch("http://localhost:3000/tasks", {
+            const response = await fetch(`${API_URL}/tasks`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -78,7 +78,7 @@ export const useFetchTask = () => {
                 return null;
             }
 
-            const response = await fetch("http://localhost:3000/tasks", {
+            const response = await fetch(`${API_URL}/tasks`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -129,7 +129,7 @@ export const useFetchTask = () => {
                 return null;
             }
 
-            const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+            const response = await fetch(`${API_URL}/tasks/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -178,7 +178,7 @@ export const useFetchTask = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+            const response = await fetch(`${API_URL}/tasks/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`
