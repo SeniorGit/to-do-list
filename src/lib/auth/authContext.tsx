@@ -13,8 +13,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const API_URL = "https://todolistbackend-production-2e7e.up.railway.app"
-    
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
+
     useEffect(()=>{
         checkAuthStatus();
     }, []);
