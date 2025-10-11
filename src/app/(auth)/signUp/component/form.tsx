@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/authContext";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export function FormSignUp() {
     // to store current input 

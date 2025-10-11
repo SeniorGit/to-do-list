@@ -19,7 +19,6 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-
 // Icons (install lucide-react)
 import { 
   LogOut, 
@@ -41,7 +40,8 @@ function DashboardContent() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { user, logout } = useAuth();
   const router = useRouter();
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
+  
   useEffect(() => {
     if (user) {
       fetchTasks();
@@ -53,7 +53,7 @@ function DashboardContent() {
       setIsLoading(true);
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:3000/tasks', {
+      const response = await fetch(`${API_URL}/tasks`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
