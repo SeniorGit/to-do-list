@@ -3,12 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/authContext";
-import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
-export function FormSignUp() {
+interface FormSignUpProps {
+    onSuccess: () => void;
+}
+
+export function FormSignUp({ onSuccess }: FormSignUpProps) {
     // to store current input 
     const [formData, setFormData] = useState({
         email: '',
@@ -19,7 +22,6 @@ export function FormSignUp() {
     const [isLoading, setIsLoading] = useState(false)
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
     const { register } = useAuth();
-    const router = useRouter();
 
     // handle change input 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,18 +34,21 @@ export function FormSignUp() {
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
-        
     };
 
-    // validatio Form signUp
+    // validation Form signUp
     const validateForm = (): boolean => {
         const newErrors: { [key: string]: string } = {};
 
         if (!formData.username.trim()) newErrors.username = 'Username is required';
+        else if (formData.username.length < 3) newErrors.username = 'Username must be at least 3 characters';
+        
         if (!formData.email.trim()) newErrors.email = 'Email is required';
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
+        
         if (!formData.password) newErrors.password = 'Password is required';
         else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+        
         if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
         else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
 
@@ -51,150 +56,181 @@ export function FormSignUp() {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Sumbit form to DB
+    // Submit form to DB
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
 
         setIsLoading(true);
         setErrors({});
-        
 
         try {
             const result = await register(formData.email, formData.password, formData.username);
             
             if (result.success) {
-                // Clear form
                 setFormData({
                     email: '',
                     password: '',
                     confirmPassword: '',
                     username: ''
                 });
-                
-                // Redirect to login after 2 seconds
-                setTimeout(() => {
-                    router.push('/signIn');
-                }, 2000);
-                
+    
+                onSuccess();
             } 
-
-            
         } catch (error) {
             console.error(error);
+            setErrors({ submit: 'Registration failed. Please try again.' });
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-            <Card className="w-full max-w-md shadow-lg">
+        <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username Field */}
+            <div className="space-y-3">
+                <Label htmlFor="username" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                    Username
+                </Label>
+                <Input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="john_doe"
+                    disabled={isLoading}
+                    className={`h-12 transition-all duration-200 ${
+                        errors.username 
+                        ? "border-destructive focus:border-destructive border-2" 
+                        : "border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    }`}
+                />
+                {errors.username && (
+                    <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
+                        <span>⚠️</span>
+                        {errors.username}
+                    </p>
+                )}
+            </div>
 
-                {/* Card Header */}
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center">
+            {/* Email Field */}
+            <div className="space-y-3">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                    Email Address
+                </Label>
+                <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="you@example.com"
+                    disabled={isLoading}
+                    className={`h-12 transition-all duration-200 ${
+                        errors.email 
+                        ? "border-destructive focus:border-destructive border-2" 
+                        : "border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    }`}
+                />
+                {errors.email && (
+                    <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
+                        <span>⚠️</span>
+                        {errors.email}
+                    </p>
+                )}
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-3">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                    Password
+                </Label>
+                <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    disabled={isLoading}
+                    className={`h-12 transition-all duration-200 ${
+                        errors.password 
+                        ? "border-destructive focus:border-destructive border-2" 
+                        : "border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    }`}
+                />
+                {errors.password && (
+                    <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
+                        <span>⚠️</span>
+                        {errors.password}
+                    </p>
+                )}
+                <p className="text-xs text-gray-500 flex items-center gap-1">
+                    <span>💡</span>
+                    Must be at least 6 characters
+                </p>
+            </div>
+
+            {/* Confirm Password Field */}
+            <div className="space-y-3">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                    Confirm Password
+                </Label>
+                <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    disabled={isLoading}
+                    className={`h-12 transition-all duration-200 ${
+                        errors.confirmPassword 
+                        ? "border-destructive focus:border-destructive border-2" 
+                        : "border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    }`}
+                />
+                {errors.confirmPassword && (
+                    <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
+                        <span>⚠️</span>
+                        {errors.confirmPassword}
+                    </p>
+                )}
+            </div>
+
+            {/* Submit Error */}
+            {errors.submit && (
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <p className="text-sm text-destructive text-center flex items-center justify-center gap-2">
+                        <span>❌</span>
+                        {errors.submit}
+                    </p>
+                </div>
+            )}
+
+            {/* Submit Button */}
+            <Button 
+                type="submit" 
+                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]" 
+                disabled={isLoading}
+            >
+                {isLoading ? (
+                    <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Account...
+                    </>
+                ) : (
+                    <>
+                        <span className="mr-2">🎯</span>
                         Create Account
-                    </CardTitle>
-                    <CardDescription className="text-center">
-                        Enter your information to create an account
-                    </CardDescription>
-                </CardHeader>
-
-                {/* Formulir main content */}
-                <CardContent className="space-y-4">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="username">Username</Label>
-                            <Input
-                                id="username"
-                                name="username"
-                                type="text"
-                                value={formData.username}
-                                onChange={handleChange}
-                                placeholder="john_doe"
-                                disabled={isLoading}
-                                className={errors.username ? "border-destructive" : ""}
-                            />
-                            {errors.username && (
-                                <p className="text-sm text-destructive">{errors.username}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="john@example.com"
-                                disabled={isLoading}
-                                className={errors.email ? "border-destructive" : ""}
-                            />
-                            {errors.email && (
-                                <p className="text-sm text-destructive">{errors.email}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="••••••••"
-                                disabled={isLoading}
-                                className={errors.password ? "border-destructive" : ""}
-                            />
-                            {errors.password && (
-                                <p className="text-sm text-destructive">{errors.password}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type="password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                placeholder="••••••••"
-                                disabled={isLoading}
-                                className={errors.confirmPassword ? "border-destructive" : ""}
-                            />
-                            {errors.confirmPassword && (
-                                <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-                            )}
-                        </div>
-                        {/* button submit */}
-                        <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? (
-                                <div className="flex items-center justify-center gap-2">
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Creating Account...
-                                </div>
-                            ) : (
-                                'Create Account'
-                            )}
-                        </Button>
-                    </form>
-                    
-                    {/* footer */}
-                    <div className="text-center text-sm">
-                        <p className="text-muted-foreground">
-                            Already have an account?{" "}
-                            <a href="/signIn" className="text-primary hover:underline font-medium">
-                                Sign in
-                            </a>
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+                    </>
+                )}
+            </Button>
+        </form>
     )
 }

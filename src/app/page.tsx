@@ -7,7 +7,7 @@ export default function Home() {
   const {user, loading} = useAuth();
   const router = useRouter();
 
-  useEffect(()=>{
+  useEffect(() => {
     if(!loading){
       if(user){
         router.push('/dashboard')
@@ -15,10 +15,11 @@ export default function Home() {
         router.push('/landingPage')
       }
     }
-  })
+  }, [user, loading, router]) 
+
   return (
-    <div className="">
-        
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Loading...</p> 
     </div>
   );
 }
