@@ -79,7 +79,7 @@ export default function HeroSection(){
                                 <div className="bg-gradient-to-br from-amber-100 to-yellow-200 rounded-lg lg:rounded-xl flex items-center justify-center overflow-hidden">
                                     <div className="w-full h-0 pb-[73.8%] relative">
                                         <Image 
-                                            src={'/assets/img/Mockup.png'} 
+                                            src='/assets/img/Mockup.png' 
                                             alt="Todo App Mockup" 
                                             fill
                                             className="object-contain"
