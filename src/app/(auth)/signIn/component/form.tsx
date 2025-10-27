@@ -88,7 +88,6 @@ export function FormSignIn() {
                 />
                 {errors.email && (
                     <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
-                        <span>⚠️</span>
                         {errors.email}
                     </p>
                 )}
@@ -124,7 +123,6 @@ export function FormSignIn() {
                 />
                 {errors.password && (
                     <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
-                        <span>⚠️</span>
                         {errors.password}
                     </p>
                 )}
@@ -143,7 +141,6 @@ export function FormSignIn() {
                     </>
                 ) : (
                     <>
-                        <span className="mr-2">🚀</span>
                         Sign In
                     </>
                 )}

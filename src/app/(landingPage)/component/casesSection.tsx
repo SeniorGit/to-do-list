@@ -1,8 +1,6 @@
 import { 
   GraduationCap, 
-  Briefcase, 
   Home, 
-  Users,
 } from 'lucide-react';
 
 export default function CasesSection() {
@@ -11,25 +9,13 @@ export default function CasesSection() {
       icon: <GraduationCap className="w-6 h-6" />,
       title: "For Students",
       description: "Manage assignments, track deadlines, and organize study schedules. Perfect for academic success.",
-      features: ["Assignment tracking", "Exam schedules", "Study reminders", "Project deadlines"]
-    },
-    {
-      icon: <Briefcase className="w-6 h-6" />,
-      title: "For Professionals",
-      description: "Track projects, manage meetings, and organize workflows. Boost your career productivity.",
-      features: ["Project management", "Meeting schedules", "Task delegation", "Progress tracking"]
+      features: ["Exam schedules", "Study reminders", "Project deadlines"]
     },
     {
       icon: <Home className="w-6 h-6" />,
       title: "For Personal Use",
       description: "Organize daily routines, shopping lists, bills, and personal goals. Simplify your life.",
-      features: ["Daily routines", "Shopping lists", "Bill reminders", "Personal goals"]
-    },
-    {
-      icon: <Users className="w-6 h-6" />,
-      title: "For Teams & Families",
-      description: "Coordinate chores, share tasks, and manage family schedules together.",
-      features: ["Shared tasks", "Chore rotation", "Family calendar", "Progress sync"]
+      features: ["Daily routines", "Bill reminders"]
     }
   ];
 

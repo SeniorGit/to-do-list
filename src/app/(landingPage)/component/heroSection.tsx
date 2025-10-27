@@ -76,16 +76,17 @@ export default function HeroSection(){
                             
                             {/* Image Container */}
                             <div className="relative bg-white rounded-xl lg:rounded-2xl shadow-lg lg:shadow-2xl p-4 sm:p-6 lg:p-8 border border-amber-200">
-                                <div className="aspect-[4/3] bg-gradient-to-br from-amber-100 to-yellow-200 rounded-lg lg:rounded-xl flex items-center justify-center overflow-hidden">
-                                    <Image 
-                                        src={'/assets/img/mockup.png'} 
-                                        alt="Todo App Mockup" 
-                                        width={400}
-                                        height={300}
-                                        className="w-full h-full object-cover scale-105 hover:scale-110 transition-transform duration-500"
-                                        sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 400px, 500px"
-                                        priority
-                                    />
+                                <div className="bg-gradient-to-br from-amber-100 to-yellow-200 rounded-lg lg:rounded-xl flex items-center justify-center overflow-hidden">
+                                    <div className="w-full h-0 pb-[73.8%] relative">
+                                        <Image 
+                                            src={'/assets/img/Mockup.png'} 
+                                            alt="Todo App Mockup" 
+                                            fill
+                                            className="object-contain"
+                                            sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 400px, 1080px"
+                                            priority
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

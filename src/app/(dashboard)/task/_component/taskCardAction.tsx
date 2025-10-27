@@ -67,7 +67,7 @@ export function DeleteConfirm({ task, onDelete, onRefresh }: CardTaskDeleteActio
           <AlertDialogAction 
             onClick={handleDelete}
             disabled={deletingId !== null}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
           >
             {deletingId ? (
               <>

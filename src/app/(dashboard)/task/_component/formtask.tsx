@@ -19,8 +19,9 @@ export function FormTask({
     onTaskUpdated, 
     task, 
     onAddTask, 
-    onUpdateTask 
-}: FormTaskProps) {
+    onUpdateTask,
+    initialDueDate 
+}: FormTaskProps & { initialDueDate?: Date | null }) {
 
     // form temporary for changing data
     const [formData, setFormData] = useState({
@@ -35,50 +36,62 @@ export function FormTask({
     // loading state
     const [isLoading, setIsLoading] = useState(false);
     
+    // Convert Date to HTML date string format (YYYY-MM-DD)
+    const convertDateToHTMLDate = (date: Date | null): string => {
+        if (!date) return "";
+        try {
+            return date.toISOString().split('T')[0];
+        } catch {
+            return "";
+        }
+    };
+
     //to show prev data to form
     useEffect(() => {
-      if (task) {
-          const convertISODateToHTMLDate = (isoString: string | undefined): string => {
-            if (!isoString) return "";
-            try {
-                const date = new Date(isoString);
-                if (isNaN(date.getTime())) return "";
-                return date.toISOString().split('T')[0];
-            } catch {
-                return "";
-            }
-          };
+        if (task) {
+            // Edit mode - show existing task data
+            const convertISODateToHTMLDate = (isoString: string | undefined): string => {
+                if (!isoString) return "";
+                try {
+                    const date = new Date(isoString);
+                    if (isNaN(date.getTime())) return "";
+                    return date.toISOString().split('T')[0];
+                } catch {
+                    return "";
+                }
+            };
 
-          const convertISODateToHTMLDateTime = (isoString: string | undefined): string => {
-            if (!isoString) return "";
-            try {
-                const date = new Date(isoString);
-                if (isNaN(date.getTime())) return "";
-                return date.toISOString().slice(0, 16);
-            } catch {
-                return "";
-            }
-          };
+            const convertISODateToHTMLDateTime = (isoString: string | undefined): string => {
+                if (!isoString) return "";
+                try {
+                    const date = new Date(isoString);
+                    if (isNaN(date.getTime())) return "";
+                    return date.toISOString().slice(0, 16);
+                } catch {
+                    return "";
+                }
+            };
 
-          setFormData({
-            title: task.title || "",
-            category: task.category || "",
-            priority: task.priority || "medium", 
-            note: task.note || "",
-            due_date: convertISODateToHTMLDate(task.due_date),     
-            reminder: convertISODateToHTMLDateTime(task.reminder)  
-          });
-      } else {
-          setFormData({
-            title: "",
-            category: "",
-            priority: "medium",
-            note: "", 
-            due_date: "",
-            reminder: ""
-          });
-      }
-    }, [task]);
+            setFormData({
+                title: task.title || "",
+                category: task.category || "",
+                priority: task.priority || "medium", 
+                note: task.note || "",
+                due_date: convertISODateToHTMLDate(task.due_date),     
+                reminder: convertISODateToHTMLDateTime(task.reminder)  
+            });
+        } else {
+            // Create mode - use initialDueDate if provided
+            setFormData({
+                title: "",
+                category: "",
+                priority: "medium",
+                note: "", 
+                due_date: initialDueDate ? convertDateToHTMLDate(initialDueDate) : "",
+                reminder: ""
+            });
+        }
+    }, [task, initialDueDate]); // Add initialDueDate to dependency array
     
     // handle change input on form
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>{
@@ -123,7 +136,7 @@ export function FormTask({
                     category: "", 
                     priority: "medium", 
                     note: "", 
-                    due_date: "", 
+                    due_date: initialDueDate ? convertDateToHTMLDate(initialDueDate) : "", // Preserve initial due date
                     reminder: ""
                 });
             }
@@ -197,7 +210,14 @@ export function FormTask({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="due_date">Due Date</Label>
+                        <Label htmlFor="due_date">
+                            Due Date
+                            {initialDueDate && !task?.id && (
+                                <span className="text-xs text-muted-foreground ml-1">
+                                    (pre-filled from calendar)
+                                </span>
+                            )}
+                        </Label>
                         <Input 
                             type="date"
                             id="due_date" 

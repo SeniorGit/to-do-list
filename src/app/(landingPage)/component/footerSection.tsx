@@ -23,31 +23,9 @@ export default function FooterSection() {
               The modern task management app that helps you focus on what matters most. 
               Simple, fast, and powerful - everything you need to boost your productivity.
             </p>
-           <div className="flex gap-4">
-              {['twitter', 'github', 'linkedin', 'instagram'].map((social) => (
-                <button
-                  key={social}
-                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-colors duration-300"
-                >
-                  {social === 'twitter' && <Twitter className="w-5 h-5 text-white" />}
-                  {social === 'github' && <Github className="w-5 h-5 text-white" />}
-                  {social === 'linkedin' && <Linkedin className="w-5 h-5 text-white" />}
-                  {social === 'instagram' && <Instagram className="w-5 h-5 text-white" />}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {/* Product Links */}
-          <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li><a href="#features" className="hover:text-amber-400 transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="hover:text-amber-400 transition-colors">How It Works</a></li>
-              <li><a href="#use-cases" className="hover:text-amber-400 transition-colors">Use Cases</a></li>
-              <li><a href="#showcase" className="hover:text-amber-400 transition-colors">App Showcase</a></li>
-            </ul>
-          </div>
+      
         </div>
 
         {/* Bottom Footer */}

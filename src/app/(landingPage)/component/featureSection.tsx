@@ -8,11 +8,6 @@ export default function FeatureSection() {
       description: "Create, edit, and organize tasks in seconds with our intuitive drag-and-drop interface. Perfect for daily to-dos and complex projects alike."
     },
     {
-      icon: <Tags className="w-6 h-6" />,
-      title: "Smart Categorization",
-      description: "Organize with color-coded tags, custom labels, and smart filters. Keep your workspace clean and focused on what matters most."
-    },
-    {
       icon: <Calendar className="w-6 h-6" />,
       title: "Intelligent Scheduling",
       description: "Set deadlines, create recurring tasks, and get smart reminders. Never miss important deadlines with our proactive notification system."
@@ -21,11 +16,6 @@ export default function FeatureSection() {
       icon: <Smartphone className="w-6 h-6" />,
       title: "Universal Access",
       description: "Works seamlessly across all devices. Your tasks sync in real-time whether you're on desktop, tablet, or mobile."
-    },
-    {
-      icon: <Lock className="w-6 h-6" />,
-      title: "Bank-Level Security",
-      description: "Your data is encrypted and secure. We use enterprise-grade security measures to protect your information and privacy."
     },
     {
       icon: <Zap className="w-6 h-6" />,

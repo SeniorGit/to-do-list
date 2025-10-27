@@ -14,12 +14,29 @@ import { CardTask } from "./_component/cardTAsk"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
+import { Plus, RefreshCw, AlertCircle, Calendar } from 'lucide-react';
 import { useState } from "react"
+import { Task } from "@/types/typeTask"
 
-export default function TaskPage() {
-  const { tasks, fetchTasks, deleteTask, updateTask, addTask, loading, error } = useFetchTask(); 
+interface TaskPageProps {
+  selectedDate?: Date | null;
+  externalTasks?: Task[]; 
+}
+
+export default function TaskPage({ selectedDate, externalTasks }: TaskPageProps) {
+  const { tasks: fetchedTasks, fetchTasks, deleteTask, updateTask, addTask, loading, error } = useFetchTask(); 
+  const tasks = externalTasks || fetchedTasks;
   
+  const filteredTasks = selectedDate ? tasks.filter(task => {
+    if (!task.due_date) return false;
+    const taskDate = new Date(task.due_date);
+    return (
+      taskDate.getDate() === selectedDate.getDate() &&
+      taskDate.getMonth() === selectedDate.getMonth() &&
+      taskDate.getFullYear() === selectedDate.getFullYear()
+    );
+  }) : tasks;
+
   // auto close for add new task
   const [isOpen, setIsOpen] = useState(false);
   const handleTaskAdded = async () => {
@@ -48,9 +65,9 @@ export default function TaskPage() {
     </div>
   );
 
-  // count complate tast, total task, and persentage
-  const completedTasks = tasks.filter(t => t.is_completed).length;
-  const totalTasks = tasks.length;
+  // count complete task, total task, and percentage - based on FILTERED tasks
+  const completedTasks = filteredTasks.filter(t => t.is_completed).length;
+  const totalTasks = filteredTasks.length;
   const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
@@ -58,9 +75,20 @@ export default function TaskPage() {
       {/* header content */}
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div>
-          <CardTitle className="text-2xl font-bold">Task Manager</CardTitle>
+          <CardTitle className="text-2xl font-bold flex items-center gap-2">
+            Task Manager
+            {selectedDate && (
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                <Calendar className="h-3 w-3 mr-1" />
+                {selectedDate.toLocaleDateString()}
+              </Badge>
+            )}
+          </CardTitle>
           <CardDescription>
-            Organize and track your daily tasks
+            {selectedDate 
+              ? `Tasks due on ${selectedDate.toLocaleDateString()}`
+              : "Organize and track your daily tasks"
+            }
           </CardDescription>
         </div>
         
@@ -103,16 +131,19 @@ export default function TaskPage() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Progress Stats Persentage, Complatation, and Task count */}
-        {tasks.length > 0 && (
+        {/* Progress Stats Percentage, Completion, and Task count */}
+        {filteredTasks.length > 0 && (
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
             <div className="space-y-1">
-              <div className="text-sm font-medium">Progress</div>
+              <div className="text-sm font-medium">
+                {selectedDate ? "Date Progress" : "Overall Progress"}
+              </div>
               <div className="text-2xl font-bold">{completionPercentage}%</div>
             </div>
             <div className="text-right space-y-1">
               <div className="text-sm text-muted-foreground">
                 {completedTasks} of {totalTasks} tasks completed
+                {selectedDate && " on this date"}
               </div>
               <Badge variant={completionPercentage === 100 ? "default" : "secondary"}>
                 {completionPercentage === 100 ? "All done! 🎉" : "In progress"}
@@ -135,33 +166,44 @@ export default function TaskPage() {
         )}
 
         {/* Loading State With Skeleton*/}
-        {loading && tasks.length === 0 ? (
+        {loading && filteredTasks.length === 0 ? (
           <div className="space-y-4">
             <div className="flex items-center justify-center space-x-2 py-4">
               <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-muted-foreground">Loading your tasks...</span>
+              <span className="text-sm text-muted-foreground">
+                {selectedDate ? "Loading tasks for selected date..." : "Loading your tasks..."}
+              </span>
             </div>
             <TaskSkeleton />
           </div>
         ) : (
           <>
             <CardTask 
-              tasks={tasks} 
+              tasks={filteredTasks} 
               onDelete={deleteTask}
               onUpdate={updateTask}
               onRefresh={fetchTasks}
             />
             
-            {/* Empty empty task board */}
-            {tasks.length === 0 && !loading && (
+            {/* Empty task board */}
+            {filteredTasks.length === 0 && !loading && (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                   <div className="rounded-full bg-muted p-4 mb-4">
-                    <Plus className="h-8 w-8 text-muted-foreground" />
+                    {selectedDate ? (
+                      <Calendar className="h-8 w-8 text-muted-foreground" />
+                    ) : (
+                      <Plus className="h-8 w-8 text-muted-foreground" />
+                    )}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No tasks yet</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {selectedDate ? "No tasks for this date" : "No tasks yet"}
+                  </h3>
                   <p className="text-muted-foreground mb-6 max-w-sm">
-                    Get started by creating your first task to stay organized and productive.
+                    {selectedDate 
+                      ? `No tasks are due on ${selectedDate.toLocaleDateString()}. Create a new task or check other dates.`
+                      : "Get started by creating your first task to stay organized and productive."
+                    }
                   </p>
                   {/* add new task if task empty */}
                   <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -175,16 +217,19 @@ export default function TaskPage() {
                       <DialogHeader>
                         <DialogTitle>Create New Task</DialogTitle>
                         <DialogDescription>
-                          Add a new task to your todo list and stay organized.
+                          {selectedDate 
+                            ? `Add a new task due on ${selectedDate.toLocaleDateString()}`
+                            : "Add a new task to your todo list and stay organized."
+                          }
                         </DialogDescription>
                       </DialogHeader>
                       <FormTask 
                         onTaskAdded={handleTaskAdded} 
                         onAddTask={addTask}
+                        initialDueDate={selectedDate} 
                       />
                     </DialogContent>
                   </Dialog>
-
                 </CardContent>
               </Card>
             )}

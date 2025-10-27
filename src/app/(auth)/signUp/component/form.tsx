@@ -109,7 +109,6 @@ export function FormSignUp({ onSuccess }: FormSignUpProps) {
                 />
                 {errors.username && (
                     <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
-                        <span>⚠️</span>
                         {errors.username}
                     </p>
                 )}
@@ -137,7 +136,6 @@ export function FormSignUp({ onSuccess }: FormSignUpProps) {
                 />
                 {errors.email && (
                     <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
-                        <span>⚠️</span>
                         {errors.email}
                     </p>
                 )}
@@ -165,12 +163,10 @@ export function FormSignUp({ onSuccess }: FormSignUpProps) {
                 />
                 {errors.password && (
                     <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
-                        <span>⚠️</span>
                         {errors.password}
                     </p>
                 )}
                 <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <span>💡</span>
                     Must be at least 6 characters
                 </p>
             </div>
@@ -197,7 +193,6 @@ export function FormSignUp({ onSuccess }: FormSignUpProps) {
                 />
                 {errors.confirmPassword && (
                     <p className="text-sm text-destructive animate-in fade-in flex items-center gap-2">
-                        <span>⚠️</span>
                         {errors.confirmPassword}
                     </p>
                 )}
@@ -207,7 +202,6 @@ export function FormSignUp({ onSuccess }: FormSignUpProps) {
             {errors.submit && (
                 <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                     <p className="text-sm text-destructive text-center flex items-center justify-center gap-2">
-                        <span>❌</span>
                         {errors.submit}
                     </p>
                 </div>
@@ -226,7 +220,6 @@ export function FormSignUp({ onSuccess }: FormSignUpProps) {
                     </>
                 ) : (
                     <>
-                        <span className="mr-2">🎯</span>
                         Create Account
                     </>
                 )}
